@@ -29,6 +29,7 @@ hmmdbPath = os.path.abspath(hmmdb)+"/*.hmm"  # ditto for hmm file
 outDir = args[2]
 
 seqName = os.path.basename(seqdbPath)
+seqName = seqName.split('.')[0]
 hmmName = os.path.basename(os.path.abspath(hmmdb))
 
 if outDir[-1:] != "/":
@@ -41,12 +42,12 @@ outFileWriter.writerow(["HMM", "Time"])
 masterstring = '/n/eddyfs01/home/npcarter/hmmer/hmmer/src/hmmpgmd --master --seqdb '+seqdbPath
 
 master = pexpect.spawn(masterstring)
-master.expect("Master is ready.")
+master.expect("Master is ready.",timeout=None)
 
 workerString = "srun -n "+str(opts.nodes)+" -c "+str(opts.cpus)+" --exclusive --mem 60000 -t 0 -p eddy /n/eddyfs01/home/npcarter/hmmer/hmmer/src/hmmpgmd --worker 10.242.44.36"
 workers = pexpect.spawn(workerString)
 for worker in range(opts.nodes):
-	workers.expect("Worker is ready.")
+	workers.expect("Worker is ready.", timeout=None)
 
 child = pexpect.spawn('/n/eddyfs01/home/npcarter/hmmer/hmmer/src/hmmc2')
 child.delaybeforesend = 0.0
